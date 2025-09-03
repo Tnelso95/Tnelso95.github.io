@@ -66,21 +66,115 @@
     }
     main {
       flex: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 24px;
+      display: block;
+      padding: 32px 24px 48px;
     }
-    .card {
-      padding: 24px 32px;
-      border-radius: 12px;
-      background: rgba(255,255,255,0.06);
+    /* Hero Section */
+    .hero {
+      max-width: 1100px;
+      margin: 24px auto 0;
+    }
+    .hero-inner {
+      display: grid;
+      grid-template-columns: 1fr 1.3fr;
+      gap: 24px;
+    }
+    @media (max-width: 900px) {
+      .hero-inner { grid-template-columns: 1fr; }
+    }
+    .surface {
+      border-radius: 16px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.04));
+      border: 1px solid rgba(148,163,184,0.18);
       box-shadow: 0 10px 30px rgba(0,0,0,0.35);
       backdrop-filter: blur(6px);
       -webkit-backdrop-filter: blur(6px);
-      text-align: center;
-      font-size: 20px;
-      line-height: 1.4;
+      overflow: hidden;
+    }
+    .photo-card {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      animation: fadeInUp 700ms ease both;
+    }
+    .accent-ring {
+      position: absolute;
+      inset: -2px;
+      border-radius: 18px;
+      pointer-events: none;
+      background: radial-gradient(1200px 400px at -10% -10%, rgba(56, 189, 248, 0.15), transparent 40%),
+                  radial-gradient(1200px 400px at 110% 110%, rgba(99, 102, 241, 0.15), transparent 40%);
+    }
+    .photo-frame {
+      width: 100%;
+      aspect-ratio: 4 / 5;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid rgba(148,163,184,0.25);
+      background: rgba(2,6,23,0.6);
+      display: grid;
+      place-items: center;
+    }
+    .photo-frame img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transform: scale(1.02);
+      transition: transform 300ms ease;
+    }
+    .photo-frame:hover img { transform: scale(1.06); }
+
+    .intro-card {
+      padding: 24px 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      animation: fadeInUp 700ms ease 120ms both;
+    }
+    .greeting {
+      margin: 0;
+      font-size: 28px;
+      line-height: 1.25;
+      letter-spacing: 0.2px;
+    }
+    .lead {
+      margin: 0;
+      font-size: 16px;
+      color: #cbd5e1;
+    }
+    .quote {
+      margin: 6px 0 0;
+      padding: 12px 14px;
+      font-size: 16px;
+      color: #e2e8f0;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(148,163,184,0.18);
+      border-left: 4px solid #38bdf8;
+      border-radius: 10px;
+    }
+    .actions {
+      margin-top: 8px;
+      display: flex;
+      gap: 12px;
+    }
+    .btn {
+      padding: 10px 14px;
+      border-radius: 10px;
+      border: 1px solid rgba(148,163,184,0.25);
+      background: rgba(255,255,255,0.06);
+      color: #e2e8f0;
+      text-decoration: none;
+      font-size: 14px;
+      transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+    }
+    .btn:hover { transform: translateY(-1px); background: rgba(255,255,255,0.12); border-color: rgba(148,163,184,0.45); }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
     }
   </style>
 </head>
@@ -101,7 +195,25 @@
     </div>
   </header>
   <main>
-    
+    <section class="hero">
+      <div class="hero-inner">
+        <div class="surface photo-card">
+          <div class="accent-ring"></div>
+          <div class="photo-frame">
+            <img src="assets/profile.png" alt="Your profile photo" />
+          </div>
+        </div>
+        <div class="surface intro-card">
+          <h2 class="greeting">Hi, I'm Tomas. Welcome.</h2>
+          <p class="lead">I build things on the web and love solving real problems with simple solutions.</p>
+          <blockquote class="quote">“Replace this with your favorite quote or a line you stand by.”</blockquote>
+          <div class="actions">
+            <a class="btn" href="#projects">View Projects</a>
+            <a class="btn" href="#contact">Get in Touch</a>
+          </div>
+        </div>
+      </div>
+    </section>
   </main>
 </body>
 </html>
