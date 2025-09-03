@@ -8,11 +8,68 @@
     html, body { height: 100%; margin: 0; }
     body {
       display: flex;
-      align-items: center;
-      justify-content: center;
+      flex-direction: column;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", Arial, sans-serif;
       background: #0f172a;
       color: #e2e8f0;
+    }
+    header {
+      background: rgba(2, 6, 23, 0.9);
+      border-bottom: 1px solid rgba(148, 163, 184, 0.15);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.35);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+    .header-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 16px 24px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 16px;
+      align-items: center;
+    }
+    .branding {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .site-title {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+    }
+    .site-tagline {
+      margin: 0;
+      font-size: 14px;
+      color: #94a3b8;
+    }
+    nav {
+      display: flex;
+      gap: 12px;
+    }
+    .nav-link {
+      padding: 8px 12px;
+      border-radius: 8px;
+      color: #e2e8f0;
+      text-decoration: none;
+      font-size: 14px;
+      border: 1px solid rgba(148, 163, 184, 0.18);
+      background: rgba(255,255,255,0.03);
+      transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+    }
+    .nav-link:hover {
+      background: rgba(255,255,255,0.08);
+      border-color: rgba(148, 163, 184, 0.35);
+      color: #ffffff;
+    }
+    main {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
     }
     .card {
       padding: 24px 32px;
@@ -28,6 +85,22 @@
   </style>
 </head>
 <body>
-  <div class="card">This is my website</div>
+  <header>
+    <div class="header-inner">
+      <div class="branding">
+        <h1 class="site-title">Your Site Title</h1>
+        <p class="site-tagline">A brief description or tagline goes here.</p>
+      </div>
+      <nav aria-label="Primary">
+        <a class="nav-link" href="#">Home</a>
+        <a class="nav-link" href="#">About</a>
+        <a class="nav-link" href="#">Projects</a>
+        <a class="nav-link" href="#">Contact</a>
+      </nav>
+    </div>
+  </header>
+  <main>
+    <div class="card">This is my website</div>
+  </main>
 </body>
 </html>
