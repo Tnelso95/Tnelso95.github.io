@@ -570,61 +570,100 @@
         console.log(`Attempting to play: ${track.name}`);
         
         try {
-          // Load and play the audio file
-          const audioPath = `assets/audio/Aja/${track.file}`;
-          console.log(`Loading audio from: ${audioPath}`);
-          
-          const response = await fetch(audioPath);
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-          }
-          
-          const arrayBuffer = await response.arrayBuffer();
-          console.log(`Audio loaded, size: ${arrayBuffer.byteLength} bytes`);
-          
-          const audioBuffer = await this.audioContext.decodeAudioData(arrayBuffer);
-          console.log(`Audio decoded, duration: ${audioBuffer.duration} seconds`);
-          
-          // Stop any existing audio
-          if (this.audioSource) {
-            try {
-              this.audioSource.stop();
-            } catch (e) {
-              // Source might already be stopped
-            }
-          }
-          
-          // Create new audio source
-          this.audioSource = this.audioContext.createBufferSource();
-          this.audioSource.buffer = audioBuffer;
-          this.audioSource.connect(this.analyser);
-          this.analyser.connect(this.audioContext.destination);
-          
-          // Set up end event to play next track
-          this.audioSource.onended = () => {
-            console.log(`Track ended: ${track.name}`);
-            this.currentTrackIndex++;
-            if (this.isPlaying) {
-              this.playCurrentTrack();
-            }
-          };
-          
-          // Start playback
-          this.audioSource.start();
-          console.log(`Successfully started playing: ${track.name}`);
-          
+          // Try Web Audio API first
+          await this.playWithWebAudio(track);
         } catch (error) {
-          console.error('Error playing audio:', error);
-          alert(`Error playing ${track.name}: ${error.message}`);
-          
-          // If audio fails, simulate track duration and move to next
-          setTimeout(() => {
-            this.currentTrackIndex++;
-            if (this.isPlaying) {
-              this.playCurrentTrack();
-            }
-          }, 5000); // 5 second fallback for testing
+          console.error('Web Audio API failed, trying HTML5 audio:', error);
+          try {
+            await this.playWithHTML5Audio(track);
+          } catch (html5Error) {
+            console.error('HTML5 audio also failed:', html5Error);
+            alert(`Error playing ${track.name}: ${error.message}\n\nTry accessing via: http://localhost:8000/record-player.html`);
+            
+            // Fallback: simulate track duration
+            setTimeout(() => {
+              this.currentTrackIndex++;
+              if (this.isPlaying) {
+                this.playCurrentTrack();
+              }
+            }, 5000);
+          }
         }
+      }
+      
+      async playWithWebAudio(track) {
+        const audioPath = `assets/audio/Aja/${track.file}`;
+        console.log(`Loading audio from: ${audioPath}`);
+        
+        const response = await fetch(audioPath);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const arrayBuffer = await response.arrayBuffer();
+        console.log(`Audio loaded, size: ${arrayBuffer.byteLength} bytes`);
+        
+        const audioBuffer = await this.audioContext.decodeAudioData(arrayBuffer);
+        console.log(`Audio decoded, duration: ${audioBuffer.duration} seconds`);
+        
+        // Stop any existing audio
+        if (this.audioSource) {
+          try {
+            this.audioSource.stop();
+          } catch (e) {
+            // Source might already be stopped
+          }
+        }
+        
+        // Create new audio source
+        this.audioSource = this.audioContext.createBufferSource();
+        this.audioSource.buffer = audioBuffer;
+        this.audioSource.connect(this.analyser);
+        this.analyser.connect(this.audioContext.destination);
+        
+        // Set up end event to play next track
+        this.audioSource.onended = () => {
+          console.log(`Track ended: ${track.name}`);
+          this.currentTrackIndex++;
+          if (this.isPlaying) {
+            this.playCurrentTrack();
+          }
+        };
+        
+        // Start playback
+        this.audioSource.start();
+        console.log(`Successfully started playing with Web Audio: ${track.name}`);
+      }
+      
+      async playWithHTML5Audio(track) {
+        // Stop any existing HTML5 audio
+        if (this.html5Audio) {
+          this.html5Audio.pause();
+          this.html5Audio = null;
+        }
+        
+        const audioPath = `assets/audio/Aja/${track.file}`;
+        console.log(`Loading HTML5 audio from: ${audioPath}`);
+        
+        this.html5Audio = new Audio(audioPath);
+        
+        // Set up end event to play next track
+        this.html5Audio.onended = () => {
+          console.log(`HTML5 track ended: ${track.name}`);
+          this.currentTrackIndex++;
+          if (this.isPlaying) {
+            this.playCurrentTrack();
+          }
+        };
+        
+        this.html5Audio.onerror = (error) => {
+          console.error('HTML5 audio error:', error);
+          throw new Error('HTML5 audio failed to load');
+        };
+        
+        // Start playback
+        await this.html5Audio.play();
+        console.log(`Successfully started playing with HTML5: ${track.name}`);
       }
       
       stop() {
@@ -638,7 +677,7 @@
           cancelAnimationFrame(this.animationId);
         }
         
-        // Stop audio playback
+        // Stop Web Audio API playback
         if (this.audioSource) {
           try {
             this.audioSource.stop();
@@ -646,6 +685,12 @@
             // Audio source might already be stopped
           }
           this.audioSource = null;
+        }
+        
+        // Stop HTML5 audio playback
+        if (this.html5Audio) {
+          this.html5Audio.pause();
+          this.html5Audio = null;
         }
         
         console.log('Stopped playback');
