@@ -439,6 +439,9 @@
             this.initAudioContext();
           }
         }, { once: true });
+        
+        // Test audio file accessibility
+        this.testAudioFiles();
       }
       
       initAudioContext() {
@@ -447,8 +450,25 @@
           this.analyser = this.audioContext.createAnalyser();
           this.analyser.fftSize = 256;
           this.dataArray = new Uint8Array(this.analyser.frequencyBinCount);
+          console.log('Audio context initialized');
         } catch (error) {
-          console.log('Web Audio API not supported');
+          console.error('Web Audio API not supported:', error);
+        }
+      }
+      
+      async testAudioFiles() {
+        console.log('Testing audio file accessibility...');
+        try {
+          const testPath = 'assets/audio/Aja/Aja.mp3';
+          const response = await fetch(testPath);
+          console.log(`Test file response: ${response.status} ${response.statusText}`);
+          if (response.ok) {
+            console.log('Audio files are accessible');
+          } else {
+            console.error('Audio files not accessible:', response.status);
+          }
+        } catch (error) {
+          console.error('Error testing audio files:', error);
         }
       }
       
@@ -515,6 +535,16 @@
           return;
         }
         
+        // Ensure audio context is initialized and resumed
+        if (!this.audioContext) {
+          this.initAudioContext();
+        }
+        
+        if (this.audioContext.state === 'suspended') {
+          await this.audioContext.resume();
+          console.log('Audio context resumed');
+        }
+        
         this.isPlaying = true;
         this.playBtn.textContent = '⏸';
         this.record.classList.add('playing');
@@ -537,17 +567,31 @@
         
         const track = this.trackList[this.currentTrackIndex];
         this.trackTitle.textContent = track.name;
+        console.log(`Attempting to play: ${track.name}`);
         
         try {
           // Load and play the audio file
           const audioPath = `assets/audio/Aja/${track.file}`;
+          console.log(`Loading audio from: ${audioPath}`);
+          
           const response = await fetch(audioPath);
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          
           const arrayBuffer = await response.arrayBuffer();
+          console.log(`Audio loaded, size: ${arrayBuffer.byteLength} bytes`);
+          
           const audioBuffer = await this.audioContext.decodeAudioData(arrayBuffer);
+          console.log(`Audio decoded, duration: ${audioBuffer.duration} seconds`);
           
           // Stop any existing audio
           if (this.audioSource) {
-            this.audioSource.stop();
+            try {
+              this.audioSource.stop();
+            } catch (e) {
+              // Source might already be stopped
+            }
           }
           
           // Create new audio source
@@ -558,6 +602,7 @@
           
           // Set up end event to play next track
           this.audioSource.onended = () => {
+            console.log(`Track ended: ${track.name}`);
             this.currentTrackIndex++;
             if (this.isPlaying) {
               this.playCurrentTrack();
@@ -566,17 +611,19 @@
           
           // Start playback
           this.audioSource.start();
-          console.log(`Playing: ${track.name}`);
+          console.log(`Successfully started playing: ${track.name}`);
           
         } catch (error) {
           console.error('Error playing audio:', error);
+          alert(`Error playing ${track.name}: ${error.message}`);
+          
           // If audio fails, simulate track duration and move to next
           setTimeout(() => {
             this.currentTrackIndex++;
             if (this.isPlaying) {
               this.playCurrentTrack();
             }
-          }, 30000); // 30 second fallback
+          }, 5000); // 5 second fallback for testing
         }
       }
       
