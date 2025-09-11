@@ -480,7 +480,7 @@
     <div class="header-inner">
       <div class="branding">
         <h1 class="site-title">Welcome to my website!</h1>
-        <p class="site-tagline">This is will act as my portfolio for EDU-241</p>
+        <p class="site-tagline">This will act as my portfolio for EDU-241</p>
         <p class="site-tagline">This is currently in development and will be updated as we move forward.</p>
       </div>
       <nav aria-label="Primary">
@@ -505,7 +505,7 @@
           </div>
           <div class="surface intro-card">
             <h2 class="greeting">Hi, I'm Tomas. Welcome.</h2>
-            <p class="lead">Throught this website are various links to projects and resources related to the EDU-241 course. To navigate through my website refer to the headers at the top of the page.</p>
+            <p class="lead">Throughout this website are various links to projects and resources related to the EDU-241 course. To navigate through my website, refer to the headers at the top of the page.</p>
             <blockquote class="quote">"The real problem is not whether machines think but whether men do." - B. F. Skinner</blockquote>
             <blockquote class="quote">"The more we know about how to do something, the harder it is to learn how to do it differently." ― Everett M. Rogers</blockquote>
             <blockquote class="quote">"Science is what we understand well enough to explain to a computer. Art is everything else we do." ― Donald Knuth</blockquote>
@@ -524,7 +524,7 @@
           <div class="project-card">
             <div class="project-header">
               <h2 class="project-title">Infographic</h2>
-              <p class="project-description">This is my infographic on the Gestlat principles. The Gestalt principles are laws of human perception that describe how humans group similar elements, recognize patterns, and simplify complex images when perceiving objects. We use these to make higher quality and more intutive products, like an infographic!</p>
+              <p class="project-description">This is my infographic on the Gestalt principles. The Gestalt principles are laws of human perception that describe how humans group similar elements, recognize patterns, and simplify complex images when perceiving objects. We use these to make higher quality and more intuitive products, like an infographic!</p>
             </div>
             <div class="project-image-container">
               <img src="assets/infographic.png" alt="Educational Infographic" class="project-image" />
@@ -547,7 +547,7 @@
     <!-- Record Player Page -->
     <div id="record-player" class="page">
       <h1 class="page-title">Drop a Record</h1>
-      <p class="page-subtitle">Interactive vinyl experience powered by Web Audio API</p>
+      <p class="page-subtitle">These are my favorite albums. Give one a spin as you explore my website!</p>
       
       <div class="record-player-container">
         <div class="turntable">
@@ -584,14 +584,11 @@
           <div class="album-cover" data-track="aja">
             <img src="assets/albums/Aja.png" alt="Aja Album Cover" style="width: 100%; height: 100%; object-fit: cover; border-radius: 6px;">
           </div>
-          <div class="album-cover" data-track="track2">
-            <div>Album 2<br><small>Placeholder</small></div>
+          <div class="album-cover" data-track="doo_wops">
+            <img src="assets/albums/Doo_Wops_And_Hooligans.jpg" alt="Doo-Wops & Hooligans Album Cover" style="width: 100%; height: 100%; object-fit: cover; border-radius: 6px;">
           </div>
-          <div class="album-cover" data-track="track3">
-            <div>Album 3<br><small>Placeholder</small></div>
-          </div>
-          <div class="album-cover" data-track="track4">
-            <div>Album 4<br><small>Placeholder</small></div>
+          <div class="album-cover" data-track="silk_degrees">
+            <img src="assets/albums/Silk_Degrees.png" alt="Silk Degrees Album Cover" style="width: 100%; height: 100%; object-fit: cover; border-radius: 6px;">
           </div>
         </div>
       </div>
@@ -717,9 +714,29 @@
               { name: "Josie", file: "Josie.mp3" }
             ]
           },
-          track2: { name: "Sample Album 2", artist: "Sample Artist", tracks: [] },
-          track3: { name: "Sample Album 3", artist: "Sample Artist", tracks: [] },
-          track4: { name: "Sample Album 4", artist: "Sample Artist", tracks: [] }
+          doo_wops: {
+            name: "Doo-Wops & Hooligans",
+            artist: "Bruno Mars",
+            tracks: [
+              { name: "Doo-Wops & Hooligans", file: "Doo-Wops_and_Hooligans.mp4" }
+            ]
+          },
+          silk_degrees: {
+            name: "Silk Degrees",
+            artist: "Boz Scaggs",
+            tracks: [
+              { name: "What Can I Say", file: "01. What Can I Say.mp3" },
+              { name: "Georgia", file: "02. Georgia.mp3" },
+              { name: "Jump Street", file: "03. Jump Street.mp3" },
+              { name: "What Do You Want The Girl To Do", file: "04. What Do You Want The Girl To Do.mp3" },
+              { name: "Harbor Lights", file: "05. Harbor Lights.mp3" },
+              { name: "Lowdown", file: "06. Lowdown.mp3" },
+              { name: "It's Over", file: "07. It's Over.mp3" },
+              { name: "Love Me Tomorrow", file: "08. Love Me Tomorrow.mp3" },
+              { name: "Lido Shuffle", file: "09. Lido Shuffle.mp3" },
+              { name: "We're All Alone", file: "10. We're All Alone.mp3" }
+            ]
+          }
         };
         
         const album = albumData[albumId];
@@ -813,7 +830,8 @@
       }
       
       async playWithWebAudio(track) {
-        const audioPath = `assets/audio/Aja/${track.file}`;
+        const albumFolder = this.getAlbumFolder(this.currentAlbum.name);
+        const audioPath = `assets/audio/${albumFolder}/${track.file}`;
         console.log(`Loading audio from: ${audioPath}`);
         
         const response = await fetch(audioPath);
@@ -863,7 +881,8 @@
           this.html5Audio = null;
         }
         
-        const audioPath = `assets/audio/Aja/${track.file}`;
+        const albumFolder = this.getAlbumFolder(this.currentAlbum.name);
+        const audioPath = `assets/audio/${albumFolder}/${track.file}`;
         console.log(`Loading HTML5 audio from: ${audioPath}`);
         
         this.html5Audio = new Audio(audioPath);
@@ -915,6 +934,15 @@
         }
         
         console.log('Stopped playback');
+      }
+      
+      getAlbumFolder(albumName) {
+        const folderMap = {
+          "Aja": "Aja",
+          "Doo-Wops & Hooligans": "Doo_Wops_And_Hooligans",
+          "Silk Degrees": "Silk_Degrees"
+        };
+        return folderMap[albumName] || "Aja";
       }
       
       animateWaveform() {
