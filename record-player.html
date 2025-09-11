@@ -383,8 +383,8 @@
       </div>
       
       <div class="album-grid">
-        <div class="album-cover" data-track="track1">
-          <div>Album 1<br><small>Placeholder</small></div>
+        <div class="album-cover" data-track="aja">
+          <img src="assets/albums/Aja.png" alt="Aja Album Cover" style="width: 100%; height: 100%; object-fit: cover; border-radius: 6px;">
         </div>
         <div class="album-cover" data-track="track2">
           <div>Album 2<br><small>Placeholder</small></div>
@@ -403,12 +403,14 @@
     class RecordPlayer {
       constructor() {
         this.isPlaying = false;
-        this.currentTrack = null;
+        this.currentAlbum = null;
+        this.currentTrackIndex = 0;
         this.audioContext = null;
         this.audioSource = null;
         this.analyser = null;
         this.dataArray = null;
         this.animationId = null;
+        this.trackList = [];
         
         this.init();
       }
@@ -426,8 +428,8 @@
         // Album selection
         document.querySelectorAll('.album-cover').forEach(cover => {
           cover.addEventListener('click', (e) => {
-            const trackId = e.currentTarget.dataset.track;
-            this.selectTrack(trackId);
+            const albumId = e.currentTarget.dataset.track;
+            this.selectAlbum(albumId);
           });
         });
         
@@ -450,28 +452,48 @@
         }
       }
       
-      selectTrack(trackId) {
+      selectAlbum(albumId) {
         // Remove active class from all albums
         document.querySelectorAll('.album-cover').forEach(cover => {
           cover.classList.remove('active');
         });
         
         // Add active class to selected album
-        document.querySelector(`[data-track="${trackId}"]`).classList.add('active');
+        document.querySelector(`[data-track="${albumId}"]`).classList.add('active');
         
-        // Update track info (placeholder data)
-        const trackData = {
-          track1: { title: "Sample Track 1", artist: "Sample Artist" },
-          track2: { title: "Sample Track 2", artist: "Sample Artist" },
-          track3: { title: "Sample Track 3", artist: "Sample Artist" },
-          track4: { title: "Sample Track 4", artist: "Sample Artist" }
+        // Define album data
+        const albumData = {
+          aja: {
+            name: "Aja",
+            artist: "Steely Dan",
+            tracks: [
+              { name: "Black Cow", file: "Black Cow.mp3" },
+              { name: "Aja", file: "Aja.mp3" },
+              { name: "Deacon Blues", file: "Deacon Blues.mp3" },
+              { name: "Peg", file: "Peg.mp3" },
+              { name: "Home at Last", file: "Home at Last (Aja September 23 1977).mp3" },
+              { name: "I Got the News", file: "i got the news.mp3" },
+              { name: "Josie", file: "Josie.mp3" }
+            ]
+          },
+          track2: { name: "Sample Album 2", artist: "Sample Artist", tracks: [] },
+          track3: { name: "Sample Album 3", artist: "Sample Artist", tracks: [] },
+          track4: { name: "Sample Album 4", artist: "Sample Artist", tracks: [] }
         };
         
-        const track = trackData[trackId];
-        this.trackTitle.textContent = track.title;
-        this.trackArtist.textContent = track.artist;
+        const album = albumData[albumId];
+        this.currentAlbum = album;
+        this.trackList = album.tracks || [];
+        this.currentTrackIndex = 0;
         
-        this.currentTrack = trackId;
+        // Update display
+        if (this.trackList.length > 0) {
+          this.trackTitle.textContent = this.trackList[0].name;
+          this.trackArtist.textContent = `${album.artist} - ${album.name}`;
+        } else {
+          this.trackTitle.textContent = album.name;
+          this.trackArtist.textContent = album.artist;
+        }
         
         // Stop current playback if playing
         if (this.isPlaying) {
@@ -487,9 +509,9 @@
         }
       }
       
-      play() {
-        if (!this.currentTrack) {
-          alert('Please select a track first!');
+      async play() {
+        if (!this.currentAlbum || this.trackList.length === 0) {
+          alert('Please select an album first!');
           return;
         }
         
@@ -502,8 +524,60 @@
         // Start waveform animation
         this.animateWaveform();
         
-        // In a real implementation, you would load and play actual audio here
-        console.log(`Playing track: ${this.currentTrack}`);
+        // Play current track
+        await this.playCurrentTrack();
+      }
+      
+      async playCurrentTrack() {
+        if (this.currentTrackIndex >= this.trackList.length) {
+          // Album finished, stop playback
+          this.stop();
+          return;
+        }
+        
+        const track = this.trackList[this.currentTrackIndex];
+        this.trackTitle.textContent = track.name;
+        
+        try {
+          // Load and play the audio file
+          const audioPath = `assets/audio/Aja/${track.file}`;
+          const response = await fetch(audioPath);
+          const arrayBuffer = await response.arrayBuffer();
+          const audioBuffer = await this.audioContext.decodeAudioData(arrayBuffer);
+          
+          // Stop any existing audio
+          if (this.audioSource) {
+            this.audioSource.stop();
+          }
+          
+          // Create new audio source
+          this.audioSource = this.audioContext.createBufferSource();
+          this.audioSource.buffer = audioBuffer;
+          this.audioSource.connect(this.analyser);
+          this.analyser.connect(this.audioContext.destination);
+          
+          // Set up end event to play next track
+          this.audioSource.onended = () => {
+            this.currentTrackIndex++;
+            if (this.isPlaying) {
+              this.playCurrentTrack();
+            }
+          };
+          
+          // Start playback
+          this.audioSource.start();
+          console.log(`Playing: ${track.name}`);
+          
+        } catch (error) {
+          console.error('Error playing audio:', error);
+          // If audio fails, simulate track duration and move to next
+          setTimeout(() => {
+            this.currentTrackIndex++;
+            if (this.isPlaying) {
+              this.playCurrentTrack();
+            }
+          }, 30000); // 30 second fallback
+        }
       }
       
       stop() {
@@ -517,7 +591,16 @@
           cancelAnimationFrame(this.animationId);
         }
         
-        // In a real implementation, you would stop the audio here
+        // Stop audio playback
+        if (this.audioSource) {
+          try {
+            this.audioSource.stop();
+          } catch (error) {
+            // Audio source might already be stopped
+          }
+          this.audioSource = null;
+        }
+        
         console.log('Stopped playback');
       }
       
