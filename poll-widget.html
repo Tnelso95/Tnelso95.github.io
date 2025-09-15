@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Polling Widget - Formative Assessment</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: #4f46e5;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+        
+        .header p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0;
+            min-height: 500px;
+        }
+        
+        .polling-section {
+            padding: 30px;
+            border-right: 1px solid #e5e7eb;
+        }
+        
+        .chat-section {
+            padding: 30px;
+            background: #f9fafb;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .poll-question {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #374151;
+        }
+        
+        .vote-options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 30px;
+        }
+        
+        .vote-option {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: white;
+        }
+        
+        .vote-option:hover {
+            border-color: #4f46e5;
+            background: #f8fafc;
+        }
+        
+        .vote-option.selected {
+            border-color: #4f46e5;
+            background: #eef2ff;
+        }
+        
+        .vote-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            margin-right: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            font-size: 14px;
+        }
+        
+        .vote-icon.red { background: #ef4444; }
+        .vote-icon.yellow { background: #eab308; }
+        .vote-icon.green { background: #22c55e; }
+        
+        .vote-label {
+            font-weight: 500;
+            color: #374151;
+        }
+        
+        .chart-container {
+            height: 200px;
+            margin-top: 20px;
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+            font-size: 14px;
+            color: #6b7280;
+        }
+        
+        .chat-header {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #374151;
+        }
+        
+        .chat-messages {
+            flex: 1;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 15px;
+            background: white;
+            overflow-y: auto;
+            max-height: 300px;
+            margin-bottom: 15px;
+        }
+        
+        .chat-message {
+            margin-bottom: 8px;
+            padding: 8px 12px;
+            background: #f3f4f6;
+            border-radius: 6px;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+        
+        .chat-input-container {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .chat-input {
+            flex: 1;
+            padding: 10px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        
+        .chat-input:focus {
+            outline: none;
+            border-color: #4f46e5;
+        }
+        
+        .send-button {
+            padding: 10px 16px;
+            background: #4f46e5;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .send-button:hover {
+            background: #4338ca;
+        }
+        
+        .send-button:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+        }
+        
+        .connection-status {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .connection-status.connected {
+            background: #dcfce7;
+            color: #166534;
+        }
+        
+        .connection-status.disconnected {
+            background: #fef2f2;
+            color: #dc2626;
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .polling-section {
+                border-right: none;
+                border-bottom: 1px solid #e5e7eb;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="connection-status" id="connectionStatus">Connecting...</div>
+    
+    <div class="container">
+        <div class="header">
+            <h1>Live Polling Widget</h1>
+            <p>Formative Assessment Tool - Real-time voting and chat</p>
+        </div>
+        
+        <div class="main-content">
+            <div class="polling-section">
+                <div class="poll-question">How well do you understand this topic?</div>
+                
+                <div class="vote-options">
+                    <div class="vote-option" data-vote="red">
+                        <div class="vote-icon red">!</div>
+                        <div class="vote-label">Need more help</div>
+                    </div>
+                    <div class="vote-option" data-vote="yellow">
+                        <div class="vote-icon yellow">?</div>
+                        <div class="vote-label">Somewhat understand</div>
+                    </div>
+                    <div class="vote-option" data-vote="green">
+                        <div class="vote-icon green">✓</div>
+                        <div class="vote-label">Fully understand</div>
+                    </div>
+                </div>
+                
+                <div class="chart-container">
+                    <canvas id="voteChart"></canvas>
+                </div>
+                
+                <div class="stats">
+                    <span>Total Votes: <span id="totalVotes">0</span></span>
+                    <span>Your Vote: <span id="userVote">None</span></span>
+                </div>
+            </div>
+            
+            <div class="chat-section">
+                <div class="chat-header">Live Chat</div>
+                <div class="chat-messages" id="chatMessages">
+                    <div class="chat-message">Welcome! Start chatting with other participants.</div>
+                </div>
+                <div class="chat-input-container">
+                    <input type="text" class="chat-input" id="chatInput" placeholder="Type your message..." maxlength="200">
+                    <button class="send-button" id="sendButton">Send</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class PollingWidget {
+            constructor() {
+                this.socket = null;
+                this.currentVote = null;
+                this.voteCounts = { red: 0, yellow: 0, green: 0 };
+                this.chart = null;
+                
+                this.init();
+            }
+            
+            init() {
+                this.connectSocket();
+                this.setupVoteHandlers();
+                this.setupChatHandlers();
+                this.initChart();
+            }
+            
+            connectSocket() {
+                this.socket = io();
+                
+                this.socket.on('connect', () => {
+                    this.updateConnectionStatus(true);
+                });
+                
+                this.socket.on('disconnect', () => {
+                    this.updateConnectionStatus(false);
+                });
+                
+                this.socket.on('voteUpdate', (data) => {
+                    this.updateVoteCounts(data);
+                });
+                
+                this.socket.on('chatMessage', (message) => {
+                    this.addChatMessage(message);
+                });
+                
+                this.socket.on('userCount', (count) => {
+                    this.updateUserCount(count);
+                });
+            }
+            
+            updateConnectionStatus(connected) {
+                const status = document.getElementById('connectionStatus');
+                if (connected) {
+                    status.textContent = 'Connected';
+                    status.className = 'connection-status connected';
+                } else {
+                    status.textContent = 'Disconnected';
+                    status.className = 'connection-status disconnected';
+                }
+            }
+            
+            setupVoteHandlers() {
+                const voteOptions = document.querySelectorAll('.vote-option');
+                
+                voteOptions.forEach(option => {
+                    option.addEventListener('click', () => {
+                        const vote = option.dataset.vote;
+                        this.castVote(vote);
+                    });
+                });
+            }
+            
+            castVote(vote) {
+                if (this.currentVote === vote) return;
+                
+                this.socket.emit('vote', vote);
+                this.currentVote = vote;
+                this.updateVoteUI();
+            }
+            
+            updateVoteUI() {
+                const voteOptions = document.querySelectorAll('.vote-option');
+                const userVoteSpan = document.getElementById('userVote');
+                
+                voteOptions.forEach(option => {
+                    option.classList.remove('selected');
+                    if (option.dataset.vote === this.currentVote) {
+                        option.classList.add('selected');
+                    }
+                });
+                
+                userVoteSpan.textContent = this.currentVote ? 
+                    this.currentVote.charAt(0).toUpperCase() + this.currentVote.slice(1) : 'None';
+            }
+            
+            updateVoteCounts(data) {
+                this.voteCounts = data;
+                this.updateChart();
+                this.updateStats();
+            }
+            
+            initChart() {
+                const ctx = document.getElementById('voteChart').getContext('2d');
+                this.chart = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Need Help', 'Somewhat', 'Understand'],
+                        datasets: [{
+                            data: [0, 0, 0],
+                            backgroundColor: ['#ef4444', '#eab308', '#22c55e'],
+                            borderWidth: 0
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    padding: 20,
+                                    usePointStyle: true
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+            
+            updateChart() {
+                this.chart.data.datasets[0].data = [
+                    this.voteCounts.red,
+                    this.voteCounts.yellow,
+                    this.voteCounts.green
+                ];
+                this.chart.update();
+            }
+            
+            updateStats() {
+                const total = this.voteCounts.red + this.voteCounts.yellow + this.voteCounts.green;
+                document.getElementById('totalVotes').textContent = total;
+            }
+            
+            updateUserCount(count) {
+                console.log(`Users connected: ${count}`);
+            }
+            
+            setupChatHandlers() {
+                const chatInput = document.getElementById('chatInput');
+                const sendButton = document.getElementById('sendButton');
+                
+                const sendMessage = () => {
+                    const message = chatInput.value.trim();
+                    if (message) {
+                        this.socket.emit('chatMessage', message);
+                        chatInput.value = '';
+                    }
+                };
+                
+                sendButton.addEventListener('click', sendMessage);
+                chatInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        sendMessage();
+                    }
+                });
+            }
+            
+            addChatMessage(message) {
+                const chatMessages = document.getElementById('chatMessages');
+                const messageDiv = document.createElement('div');
+                messageDiv.className = 'chat-message';
+                messageDiv.textContent = message;
+                
+                chatMessages.appendChild(messageDiv);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+                
+                while (chatMessages.children.length > 50) {
+                    chatMessages.removeChild(chatMessages.firstChild);
+                }
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            new PollingWidget();
+        });
+    </script>
+</body>
+</html>
