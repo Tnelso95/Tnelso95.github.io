@@ -618,6 +618,48 @@
       font-size: 18px;
     }
     
+    /* Resume Button Styles */
+    .resume-section {
+      margin-top: 24px;
+      display: flex;
+      justify-content: center;
+    }
+    
+    .resume-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 24px;
+      border-radius: 12px;
+      color: #e2e8f0;
+      text-decoration: none;
+      font-size: 15px;
+      font-weight: 500;
+      border: 1px solid rgba(148, 163, 184, 0.2);
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.1), rgba(99, 102, 241, 0.1));
+      transition: all 0.3s ease;
+      cursor: pointer;
+      letter-spacing: -0.01em;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+    
+    .resume-button:hover {
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.2), rgba(99, 102, 241, 0.2));
+      border-color: rgba(56, 189, 248, 0.4);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(56, 189, 248, 0.2);
+      color: #ffffff;
+    }
+    
+    .resume-button:active {
+      transform: translateY(0);
+    }
+    
+    .resume-icon {
+      font-size: 16px;
+    }
+    
     /* Popup Modal */
     .popup-overlay {
       position: fixed;
@@ -777,6 +819,13 @@
             <blockquote class="quote">"The real problem is not whether machines think but whether men do." - B. F. Skinner</blockquote>
             <blockquote class="quote">"The more we know about how to do something, the harder it is to learn how to do it differently." ― Everett M. Rogers</blockquote>
             <blockquote class="quote">"Science is what we understand well enough to explain to a computer. Art is everything else we do." ― Donald Knuth</blockquote>
+            
+            <div class="resume-section">
+              <a href="assets/Resume.pdf" target="_blank" class="resume-button">
+                <span class="resume-icon">📄</span>
+                View My Resume
+              </a>
+            </div>
           </div>
         </div>
         
@@ -862,6 +911,16 @@
             </div>
             <div class="project-image-container">
               <img src="assets/codedex.gif" alt="Codedex.io Evaluation" class="project-image" />
+            </div>
+          </div>
+          
+          <div class="project-card">
+            <div class="project-header">
+              <h2 class="project-title">Differentiation</h2>
+              <p class="project-description">Thinking about ways I could utilize differentiation in my college computer science classroom, I believe open-ended projects designed around the upper levels of a student's Zone of Proximal Development (ZPD) would be highly effective. The ZPD refers to the range between what a learner can do independently and what they can do with guidance. By keeping assignments open-ended, I give students the freedom to demonstrate their knowledge in the way they excel—whether that's analytical, practical, or creative. Pushing students toward the upper end of their ZPD challenges all learners, from those with little prior ability to those who are already comfortable with the content. For example, if I want students to demonstrate their understanding of logic gates, one way I could differentiate for advanced students would be by providing them with an IDE and having them show me logic gates within code or animations. For beginner students, I could have them show me their understanding using physical products like Snap Circuits. In both cases, students are demonstrating their understanding, yet both are being challenged in the demonstration of that learning. I am differentiating by changing the tools—physical for the more intuitive and virtual for the more abstract thinkers. This approach ensures that all students are equally engaged, challenged appropriately, and putting forth comparable effort, while still allowing them to showcase their understanding in individualized ways. There are several advantages to this method. It is equitable, since all students can engage with the content at their own level, and it gives them freedom to demonstrate their knowledge in ways that feel meaningful and authentic. However, there are also challenges. This strategy would require significant effort on my part to review and approve project ideas to ensure they align with the expected level of difficulty. Additionally, I would need to implement some form of formative assessment to gauge where each student currently stands, so that projects can be matched more accurately to their ZPD. Additionally, pushing students towards their end ranges of ZPD would require additional "scaffolding" on my part. Lots of work, but it seems worth it!</p>
+            </div>
+            <div class="project-image-container">
+              <img src="assets/snap.png" alt="Differentiation Project" class="project-image" />
             </div>
           </div>
         </div>
