@@ -282,6 +282,76 @@
       box-shadow: 0 12px 40px rgba(0,0,0,0.2);
     }
     
+    /* Expandable Project Cards */
+    .project-card {
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .project-card.expanded {
+      transform: translateY(-8px);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.25), 0 1px 0 rgba(255,255,255,0.1);
+    }
+    
+    .project-description {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s ease, opacity 0.3s ease;
+      opacity: 0;
+    }
+    
+    .project-card.expanded .project-description {
+      max-height: 1000px;
+      opacity: 1;
+    }
+    
+    .project-header {
+      position: relative;
+    }
+    
+    .expand-icon {
+      position: absolute;
+      top: 28px;
+      right: 28px;
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(148,163,184,0.2);
+      border-radius: 50%;
+      color: #e2e8f0;
+      font-size: 14px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+    
+    .project-card.expanded .expand-icon {
+      transform: rotate(45deg);
+      background: rgba(56, 189, 248, 0.2);
+      border-color: rgba(56, 189, 248, 0.4);
+      color: #38bdf8;
+    }
+    
+    .project-card:hover .expand-icon {
+      background: rgba(255,255,255,0.15);
+      border-color: rgba(148,163,184,0.3);
+    }
+    
+    .project-card.expanded:hover .expand-icon {
+      background: rgba(56, 189, 248, 0.3);
+      border-color: rgba(56, 189, 248, 0.5);
+    }
+    
+    /* YouTube Link Hover Effects */
+    .youtube-link:hover {
+      background: rgba(255,255,255,0.1) !important;
+      border-color: rgba(148, 163, 184, 0.4) !important;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+    
     .project-link {
       display: block;
       text-decoration: none;
@@ -791,15 +861,13 @@
       <div class="branding">
         <h1 class="site-title">Welcome to my website!</h1>
         <p class="site-tagline">This will act as my portfolio for EDU-241</p>
-        <p class="site-tagline">This is currently in development and will be updated as we move forward.</p>
+        <p class="site-tagline">For any questions, reach out to me at tomasnelson@gustavus.edu</p>
       </div>
       <nav aria-label="Primary">
         <a class="nav-link active" data-page="home">Home</a>
         <a class="nav-link" data-page="projects">Projects</a>
         <a class="nav-link" data-page="record-player">Drop a Record</a>
         <a class="nav-link" data-page="educator">My Educator</a>
-        <a class="nav-link" data-page="about">About</a>
-        <a class="nav-link" data-page="contact">Contact</a>
       </nav>
     </div>
   </header>
@@ -845,9 +913,10 @@
         <p class="page-subtitle">Here is where all of my course projects will be located</p>
         
         <div class="projects-grid">
-          <div class="project-card">
+          <div class="project-card" data-project="infographic">
             <div class="project-header">
               <h2 class="project-title">Infographic</h2>
+              <div class="expand-icon">+</div>
               <p class="project-description">This is my infographic on the Gestalt principles. The Gestalt principles are laws of human perception that describe how humans group similar elements, recognize patterns, and simplify complex images when perceiving objects. We use these to make higher quality and more intuitive products, like an infographic! 2 pros are that it is a great way to present information and can be used to help people understand complex topics. 2 cons are that it can be hard to create and they are information dense. You could use these scattered throughout a classroom where studnet might gaze when they loose attention..</p>
             </div>
             <div class="project-image-container">
@@ -855,9 +924,10 @@
             </div>
           </div>
           
-          <div class="project-card">
+          <div class="project-card" data-project="meme">
             <div class="project-header">
               <h2 class="project-title">Meme</h2>
+              <div class="expand-icon">+</div>
               <p class="project-description">Here is my homemade meme. Machine learning under the hood is just some cool math. 2 pros memes provide are making diffult topics less daunting and providing humor with learning. 2 cons is they might be distracting and hard to implement. These could be used in a presentation or lecture to help engage the audience.</p>
             </div>
             <div class="project-image-container">
@@ -865,9 +935,10 @@
             </div>
           </div>
           
-          <div class="project-card">
+          <div class="project-card" data-project="polling">
             <div class="project-header">
-              <h2 class="project-title">Live Polling Widget</h2>
+              <h2 class="project-title">Student Assessment App</h2>
+              <div class="expand-icon">+</div>
               <p class="project-description">This is my own homemade educational technology. I designed this widget to provide live formative assessments that support real-time instruction. If you are grading this the link will not work if server is not up. I can email a video demo or show in class. By accessing the link, users can participate in a live poll and a chat room for feedback and responses. Two pros of this technology are that it is incredibly intuitive and provides live results based on participants' responses. Two cons are that spam or troll prevention has not yet been implemented—though it would be easy to add—and its functionality is currently limited to chat and voting. I use this tool in a variety of lectures to gather constant feedback, and it is especially helpful for encouraging questions from those who may feel anxious about raising their hand.</p>
             </div>
             <div class="project-image-container">
@@ -885,9 +956,10 @@
             </div>
           </div>
           
-          <div class="project-card">
+          <div class="project-card" data-project="schoology">
             <div class="project-header">
-              <h2 class="project-title">Schoology</h2>
+              <h2 class="project-title">Learning Management System: Schoology</h2>
+              <div class="expand-icon">+</div>
               <p class="project-description">Schoology is a cloud-based Learning Management System designed for K-12 and higher ed. It provides course management, assessments, submissions, and communication all within the platform. Two pros to Schoology are the fully integrated learning management system—grades, assignments, communication, and class resources all in one place. Another pro would be cross-platform access. Whether a student is on a laptop or tablet, they have the same accessibility to all of the features of Schoology. Two cons would be that the layout is very rigid, and there is virtually zero customization to the user interface. Second, from experience, syncs can glitch, and uploaded materials on both students' and teachers' ends won't be posted. As far as how I would implement it into a classroom, I think it was, and would continue to be, an effective platform for high school students. It's got all of your things in one place, and it's consistent. Having all of your classes under the same system makes it so once you get the hang of it, you've got everything you need at your fingertips.</p>
             </div>
             <div class="project-image-container">
@@ -895,9 +967,10 @@
             </div>
           </div>
           
-          <div class="project-card">
+          <div class="project-card" data-project="youtube">
             <div class="project-header">
-              <h2 class="project-title">YouTube</h2>
+              <h2 class="project-title">Social Media: YouTube</h2>
+              <div class="expand-icon">+</div>
               <p class="project-description">YouTube is a widely used online video-sharing and streaming platform that allows users to upload, view, share, and comment on videos. It is one of the largest repositories of educational, entertainment, and professional content worldwide, making it a powerful tool for both personal learning and formal education. YouTube supports high-definition video, playlists, closed captions, live streaming, and community interaction, which makes it versatile for classroom use and professional development. Some pros of YouTube are its vast variety of content and creators, which allows for a wide range of options for learning. Another pro is that features like closed captions and adjustable playback speed make content digestible for everyone. Some cons are the potential distractions of YouTube, as it is one of the most popular content mediums, and ads are constant and can be rather annoying. How I would use YouTube in my classroom is by creating my own tutoring videos similar to those that already exist. There are many YouTube tutors for computer science, but it might be more relatable if I create the content myself—it would be good practice for me as well.</p>
             </div>
             <div class="project-image-container">
@@ -905,9 +978,10 @@
             </div>
           </div>
           
-          <div class="project-card">
+          <div class="project-card" data-project="codedex">
             <div class="project-header">
-              <h2 class="project-title">Codedex.io</h2>
+              <h2 class="project-title">Content Specific Platform: Codedex.io</h2>
+              <div class="expand-icon">+</div>
               <p class="project-description">Codedex.io is an online platform that teaches coding through interactive tutorials, challenges, and projects. Its interface is designed to be student-friendly, with guided lessons in Python, JavaScript, SQL, and other programming languages. The site combines text-based explanations, coding exercises, and immediate feedback. The main task they are trying to accomplish is the gamification of learning to code. Some pros are that students practice coding directly in the browser and get instant feedback, which supports active learning instead of passive reading. The platform also uses challenges, levels, and progress tracking to keep students motivated, making coding feel less intimidating. Some cons are that lessons and features are restricted behind a paywall, which could limit accessibility for students in a K–12 setting without school funding. The content is also strong for beginners and hobbyists but may be too much for middle and high school classrooms. In a future teaching context, I could use Codedex.io as a supplemental tool for introducing coding. An example would be assigning short coding challenges as homework or warm-up activities. I could also use the platform during computer lab sessions for self-paced exploration, allowing advanced students to progress faster while beginners get structured guidance.</p>
             </div>
             <div class="project-image-container">
@@ -915,9 +989,10 @@
             </div>
           </div>
           
-          <div class="project-card">
+          <div class="project-card" data-project="differentiation">
             <div class="project-header">
-              <h2 class="project-title">Differentiation</h2>
+              <h2 class="project-title">Differentiation in the Classroom</h2>
+              <div class="expand-icon">+</div>
               <p class="project-description">Thinking about ways I could utilize differentiation in my college computer science classroom, I believe open-ended projects designed around the upper levels of a student's Zone of Proximal Development (ZPD) would be highly effective. The ZPD refers to the range between what a learner can do independently and what they can do with guidance. By keeping assignments open-ended, I give students the freedom to demonstrate their knowledge in the way they excel—whether that's analytical, practical, or creative. Pushing students toward the upper end of their ZPD challenges all learners, from those with little prior ability to those who are already comfortable with the content. For example, if I want students to demonstrate their understanding of logic gates, one way I could differentiate for advanced students would be by providing them with an IDE and having them show me logic gates within code or animations. For beginner students, I could have them show me their understanding using physical products like Snap Circuits. In both cases, students are demonstrating their understanding, yet both are being challenged in the demonstration of that learning. I am differentiating by changing the tools—physical for the more intuitive and virtual for the more abstract thinkers. This approach ensures that all students are equally engaged, challenged appropriately, and putting forth comparable effort, while still allowing them to showcase their understanding in individualized ways. There are several advantages to this method. It is equitable, since all students can engage with the content at their own level, and it gives them freedom to demonstrate their knowledge in ways that feel meaningful and authentic. However, there are also challenges. This strategy would require significant effort on my part to review and approve project ideas to ensure they align with the expected level of difficulty. Additionally, I would need to implement some form of formative assessment to gauge where each student currently stands, so that projects can be matched more accurately to their ZPD. Additionally, pushing students towards their end ranges of ZPD would require additional "scaffolding" on my part. Lots of work, but it seems worth it!</p>
             </div>
             <div class="project-image-container">
@@ -925,9 +1000,10 @@
             </div>
           </div>
           
-          <div class="project-card">
+          <div class="project-card" data-project="class-plan">
             <div class="project-header">
               <h2 class="project-title">Online/Hybrid Class Plan</h2>
+              <div class="expand-icon">+</div>
               <p class="project-description">Class Type: College Computer Science I<br>
               Instructional Style: Hybrid – Flipped Classroom with Stations<br>
               Topic: Python Turtles<br><br>
@@ -951,9 +1027,10 @@
             </div>
           </div>
           
-          <div class="project-card">
+          <div class="project-card" data-project="ai-classroom">
             <div class="project-header">
               <h2 class="project-title">AI in the Classroom</h2>
+              <div class="expand-icon">+</div>
               <p class="project-description"><strong>Potential Benefit or Use of AI in Education</strong><br>
               I think AI has the potential to make students more curious and independent learners. It can serve as a sort of modern day Library of Alexandria, as an endless source of knowledge for anyone willing to explore. With the right guidance, AI could encourage students to ask deeper questions, experiment more, and take ownership of their learning rather than just waiting for answers from a teacher or textbook. Used thoughtfully, it could make education feel less like memorization and more like discovery.<br><br>
               
@@ -1022,6 +1099,12 @@
           <div class="album-cover" data-track="american_idiot">
             <img src="assets/albums/American_Idiot.jpg" alt="American Idiot Album Cover" style="width: 100%; height: 100%; object-fit: cover; border-radius: 6px;">
           </div>
+          <div class="album-cover" data-track="nevermind">
+            <img src="assets/albums/Nevermind.jpg" alt="Nevermind Album Cover" style="width: 100%; height: 100%; object-fit: cover; border-radius: 6px;">
+          </div>
+          <div class="album-cover" data-track="teenage_dream">
+            <img src="assets/albums/Teenage_Dream.jpeg" alt="Teenage Dream Album Cover" style="width: 100%; height: 100%; object-fit: cover; border-radius: 6px;">
+          </div>
         </div>
       </div>
     </div>
@@ -1030,41 +1113,41 @@
     <div id="educator" class="page">
       <section class="hero">
         <div class="hero-inner">
+          <div class="surface photo-card">
+            <div class="accent-ring"></div>
+            <div class="photo-frame">
+              <img src="assets/nate.png" alt="Nate B. Jones" />
+            </div>
+          </div>
           <div class="surface intro-card">
             <h2 class="greeting">My Educator: Nate B. Jones</h2>
             <p class="lead">For my following an educator assignment, I went a little off the beaten path and chose a nontraditional educator. I picked Nate B. Jones, who covers all things AI from the newest model releases to practical applications developers can actually use. Nate is kind of an OG in the AI space, with over 20 years of industry experience, including time working on major projects at Amazon AWS. I chose him because he's incredibly knowledgeable but also has this rare ability to explain really complex ideas in plain, understandable language. I also appreciate how current and relevant his content is. Every video feels like a direct window into what's happening right now in tech, which helps me stay sharp and engaged as a developer.</p>
             
             <blockquote class="quote">"The tech world is changing fast, but that's not something to fear. What stays constant is the value of hard work, curiosity, and adaptability."</blockquote>
             
-            <div class="surface intro-card" style="margin-top: 24px;">
-              <h3 style="font-size: 20px; font-weight: 600; margin: 0 0 16px 0; color: #f8fafc;">Favorite Post</h3>
-              <p class="lead">My favorite video of his was "The Inside Scoop on Juniors and Jobs in the AI Age." It wasn't his usual breakdown of new models or best practices, but it hit close to home since I'm just starting my career in tech. The job market right now is rough for junior developers and many entry level roles that used to exist have been taken over or reshaped by AI tools. Nate acknowledged that reality, but what I liked most is that he didn't make it sound hopeless. He explained that junior devs today need to bring more to the table than just code. They need curiosity, communication skills, and the drive to keep learning. Companies are looking for people who can grow fast and think critically, not just follow instructions. He also pointed out that there are still plenty of opportunities for people who are willing to be flexible and carve out new paths. That video gave me some much needed perspective and confidence about my future in tech, which is why it stood out to me.</p>
+            <div style="margin-top: 20px; display: flex; align-items: center; gap: 8px;">
+              <a href="https://www.youtube.com/@NateBJones" target="_blank" class="youtube-link" style="display: flex; align-items: center; gap: 8px; text-decoration: none; color: #e2e8f0; font-size: 14px; font-weight: 500; padding: 8px 12px; border: 1px solid rgba(148, 163, 184, 0.2); border-radius: 8px; background: rgba(255,255,255,0.05); transition: all 0.3s ease;">
+                <img src="assets/youtube.png" alt="YouTube" style="width: 16px; height: 16px; object-fit: contain;" />
+                <span>Visit Nate's YouTube Channel</span>
+              </a>
             </div>
-            
-            <div class="surface intro-card" style="margin-top: 24px;">
-              <h3 style="font-size: 20px; font-weight: 600; margin: 0 0 16px 0; color: #f8fafc;">What I Have Learned</h3>
-              <p class="lead">This assignment turned out to be way more valuable than I expected. Watching Nate's videos regularly kept me up to date on AI trends and helped me become a stronger, more informed developer. But more than just technical skills, I learned how to think critically about where technology is heading and how to explain it to others. I've found myself having more conversations about AI and even helping friends understand some of the same concepts I learned from Nate. The biggest takeaway, though, is that the tech world is changing fast, but that's not something to fear. What stays constant is the value of hard work, curiosity, and adaptability. AI might shift the landscape, but the people who keep learning and stay passionate will always find a way to thrive.</p>
-            </div>
+          </div>
+        </div>
+        
+        <div class="hero-inner" style="margin-top: 40px;">
+          <div class="surface intro-card">
+            <h3 style="font-size: 24px; font-weight: 600; margin: 0 0 20px 0; color: #f8fafc; letter-spacing: -0.01em;">Favorite Video</h3>
+            <p class="lead">My favorite video of his was "The Inside Scoop on Juniors and Jobs in the AI Age." It wasn't his usual breakdown of new models or best practices, but it hit close to home since I'm just starting my career in tech. The job market right now is rough for junior developers and many entry level roles that used to exist have been taken over or reshaped by AI tools. Nate acknowledged that reality, but what I liked most is that he didn't make it sound hopeless. He explained that junior devs today need to bring more to the table than just code. They need curiosity, communication skills, and the drive to keep learning. Companies are looking for people who can grow fast and think critically, not just follow instructions. He also pointed out that there are still plenty of opportunities for people who are willing to be flexible and carve out new paths. That video gave me some much needed perspective and confidence about my future in tech, which is why it stood out to me.</p>
+          </div>
+          
+          <div class="surface intro-card">
+            <h3 style="font-size: 24px; font-weight: 600; margin: 0 0 20px 0; color: #f8fafc; letter-spacing: -0.01em;">What I Have Learned</h3>
+            <p class="lead">This assignment turned out to be way more valuable than I expected. Watching Nate's videos regularly kept me up to date on AI trends and helped me become a stronger, more informed developer. But more than just technical skills, I learned how to think critically about where technology is heading and how to explain it to others. I've found myself having more conversations about AI and even helping friends understand some of the same concepts I learned from Nate. The biggest takeaway, though, is that the tech world is changing fast, but that's not something to fear. What stays constant is the value of hard work, curiosity, and adaptability. AI might shift the landscape, but the people who keep learning and stay passionate will always find a way to thrive.</p>
           </div>
         </div>
       </section>
     </div>
 
-    <!-- About Page -->
-    <div id="about" class="page">
-      <div class="projects-container">
-        <h1 class="page-title">About</h1>
-        <p class="page-subtitle">Coming soon...</p>
-      </div>
-    </div>
-
-    <!-- Contact Page -->
-    <div id="contact" class="page">
-      <div class="projects-container">
-        <h1 class="page-title">Contact</h1>
-        <p class="page-subtitle">Coming soon...</p>
-      </div>
-    </div>
 
     <!-- Story Page -->
     <div id="story" class="page">
@@ -1242,6 +1325,41 @@
               { name: "Wake Me Up When September Ends", file: "11-Wake Me Up When September Ends.mp3" },
               { name: "Homecoming", file: "12-Homecoming.mp3" },
               { name: "Whatsername", file: "13-Whatsername.mp3" }
+            ]
+          },
+          nevermind: {
+            name: "Nevermind",
+            artist: "Nirvana",
+            tracks: [
+              { name: "Smells Like Teen Spirit", file: "01. Smells Like Teen Spirit.mp3" },
+              { name: "In Bloom", file: "02. In Bloom.mp3" },
+              { name: "Come As You Are", file: "03. Come As You Are.mp3" },
+              { name: "Breed", file: "04. Breed.mp3" },
+              { name: "Lithium", file: "05. Lithium.mp3" },
+              { name: "Polly", file: "06. Polly.mp3" },
+              { name: "Territorial Pissings", file: "07. Territorial Pissings.mp3" },
+              { name: "Drain You", file: "08. Drain You.mp3" },
+              { name: "Lounge Act", file: "09. Lounge Act.mp3" },
+              { name: "Stay Away", file: "10. Stay Away.mp3" },
+              { name: "On a Plain", file: "11. On a Plain.mp3" },
+              { name: "Something In the Way & Endless, Nameless", file: "12. Something In the Way & Endless, Nameless.mp3" }
+            ]
+          },
+          teenage_dream: {
+            name: "Teenage Dream",
+            artist: "Katy Perry",
+            tracks: [
+              { name: "Teenage Dream", file: "1. Teenage Dream.mp3" },
+              { name: "Last Friday Night", file: "2. Last Friday Night.mp3" },
+              { name: "California Gurls", file: "3. California Gurls.mp3" },
+              { name: "Firework", file: "4. Firework.mp3" },
+              { name: "Peacock", file: "5. Peacock.mp3" },
+              { name: "Circle The Drain", file: "6. Circle The Drain.mp3" },
+              { name: "The One That Got Away", file: "7. The One That Got Away.mp3" },
+              { name: "E.T.", file: "8. E.T..mp3" },
+              { name: "Who Am I Living For", file: "9. Who Am I Living For.mp3" },
+              { name: "Pearl", file: "10. Pearl.mp3" },
+              { name: "Hummingbird Heartbeat", file: "11. Hummingbird Heartbeat.mp3" }
             ]
           }
         };
@@ -1448,8 +1566,9 @@
           "Aja": "Aja",
           "Doo-Wops & Hooligans": "Doo_Wops_And_Hooligans",
           "Silk Degrees": "Silk_Degrees",
-          "American Idiot": "American_Idiot"
-
+          "American Idiot": "American_Idiot",
+          "Nevermind": "Nevermind",
+          "Teenage Dream": "Teenage_Dream"
         };
         return folderMap[albumName] || "Aja";
       }
@@ -1573,9 +1692,43 @@
       }
     }
 
+    // Project Card Expansion System
+    class ProjectExpansion {
+      constructor() {
+        this.init();
+      }
+      
+      init() {
+        // Add click handlers to all project cards
+        document.querySelectorAll('.project-card').forEach(card => {
+          card.addEventListener('click', (e) => {
+            // Don't expand if clicking on the project link (polling widget)
+            if (e.target.closest('.project-link')) {
+              return;
+            }
+            
+            this.toggleCard(card);
+          });
+        });
+      }
+      
+      toggleCard(card) {
+        const isExpanded = card.classList.contains('expanded');
+        
+        if (isExpanded) {
+          // Collapse the card
+          card.classList.remove('expanded');
+        } else {
+          // Expand the card
+          card.classList.add('expanded');
+        }
+      }
+    }
+
     // Initialize the application
     document.addEventListener('DOMContentLoaded', () => {
       new PageManager();
+      new ProjectExpansion();
     });
   </script>
 </body>
